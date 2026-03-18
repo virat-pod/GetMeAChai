@@ -23,7 +23,7 @@ const faqs = () => {
     },
     {
       q: "Is there a fee to use Buy Me a Coffee?",
-      a: "We do not charge a monthly fee. All features including publishing and emails are free for everyone We are open-source lover. We'll never show ads and we'll never sell your data.",
+      a: "We do not charge any fee. All features including publishing and emails are free for everyone We are open-source lover. We'll never show ads and we'll never sell your data.",
     },
     {
       q: "How do I contact Buy Me a Coffee?",
