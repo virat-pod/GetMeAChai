@@ -10,6 +10,7 @@ import SessionWrapper from "@/components/wrappers/sessionWrapper";
 import ScrollWrapper from "@/components/wrappers/scrollWrapper";
 import { SidebarProvider } from "@/lib/contexts/SidebarContext";
 import { ServiceProvider } from "@/lib/contexts/ServiceContext";
+import { Analytics } from "@vercel/analytics/next";
 
 const dancingScript = Dancing_Script({
   variable: "--font-dancing-script",
@@ -57,6 +58,7 @@ export default function RootLayout({ children }) {
             </SidebarProvider>
           </SessionWrapper>
         </ServiceProvider>
+        <Analytics />
       </body>
     </html>
   );
