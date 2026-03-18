@@ -1,26 +1,123 @@
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined");
+@import "react-toastify/dist/ReactToastify.css";
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes floating {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+@keyframes shrink {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+.animate-slide-up {
+  animation: slide-up 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.animate-shrink {
+  animation: shrink 4s linear forwards;
+}
+
+@theme {
+  --font-dancing: "Dancing Script", cursive;
+  --font-roboto: "Roboto", sans-serif;
+  --font-lato: "Lato", sans-serif;
+  --color-tomato: #d4503c;
+  --animate-marquee: marquee 5s infinite linear;
+  --animate-floating: floating 2s ease-in-out infinite;
+}
+
+.group:hover .paused-on-hover {
+  animation-play-state: paused;
+}
+
+@layer components {
+  .hero-card {
+    @apply py-4 rounded-2xl border-[2px] border-zinc-100 shadow-[0_4px_24px_rgba(0,0,0,0.08)] p-2 w-50 flex gap-1 items-center flex-col justify-center bg-white;
+  }
+  /* support section stylings */
+  .sticker {
+    @apply text-2xl absolute shadow-[0_6px_16px_rgba(0,0,0,0.1)] bg-white border p-1.5 sm:p-3 rounded-full border-zinc-200;
+  }
+  .person-comment {
+    @apply bg-white flex items-center gap-3 px-3 pl-1 py-1 border border-zinc-200 shadow-[0_2px_8px_rgba(0,0,0,0.1)] rounded-full;
+  }
+
+  /* carasouel card */
+  .remove-scrollwheel {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  /* Review section (route) */
+  .review-card {
+    @apply shadow-[0_1px_8px_rgba(0,0,0,0.1)] max-w-[500px] md:max-w-fit hover:-rotate-2 transition-all duration-300 p-4 py-4 rounded-3xl flex flex-col gap-3.5  bg-white;
+  }
+
+  /* Profile of card */
+  .review-profile {
+    @apply flex items-center gap-2;
+  }
+  .review-profile-img {
+    @apply w-9 rounded-3xl;
+  }
+  /* Profile id name */
+  .profile-id-name {
+    @apply text-[0.9rem] pl-1 font-medium;
+  }
+  .profile-id-username {
+    @apply text-zinc-500 text-[0.9rem] leading-none;
+  }
+  .review-card-post {
+    @apply pl-0.5 text-zinc-900 font-lato leading-relaxed;
+  }
+  /* Faq */
+  .support-btns {
+    @apply p-2.5 hover:scale-[1.03] hover:transition-none hover:delay-0 hover:transform-none text-center px-3.5 border-2 border-zinc-800 rounded-full font-bold;
+  }
+
+  /* Log In Page */
+  .auths-btn {
+    @apply w-full cursor-pointer flex items-center gap-2 justify-center bg-white hover:bg-zinc-200 border border-gray-500/30 py-2.5 rounded-full text-gray-900;
+  }
+
+  /* Dashboard Page */
+  .inputs-styling {
+    @apply bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-zinc-700 text-sm outline-none focus:border-yellow-300 focus:ring-2 focus:ring-yellow-100/50 transition-all duration-200;
+  }
+}
+
+:root {
+  --background: #ffffff;
 }

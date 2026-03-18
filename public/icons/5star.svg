@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="40" viewBox="0 0 220 40">
+
+  <!-- Star 1 -->
+  <g transform="translate(0, 0)">
+    <polygon points="20,4 24.9,14.9 37,16.6 28,25.3 30.2,37.3 20,31.8 9.8,37.3 12,25.3 3,16.6 15.1,14.9"
+      fill="#2ae019" stroke="#2ae019" stroke-width="1" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Star 2 -->
+  <g transform="translate(44, 0)">
+    <polygon points="20,4 24.9,14.9 37,16.6 28,25.3 30.2,37.3 20,31.8 9.8,37.3 12,25.3 3,16.6 15.1,14.9"
+      fill="#2ae019" stroke="#2ae019" stroke-width="1" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Star 3 -->
+  <g transform="translate(88, 0)">
+    <polygon points="20,4 24.9,14.9 37,16.6 28,25.3 30.2,37.3 20,31.8 9.8,37.3 12,25.3 3,16.6 15.1,14.9"
+      fill="#2ae019" stroke="#2ae019" stroke-width="1" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Star 4 -->
+  <g transform="translate(132, 0)">
+    <polygon points="20,4 24.9,14.9 37,16.6 28,25.3 30.2,37.3 20,31.8 9.8,37.3 12,25.3 3,16.6 15.1,14.9"
+      fill="#2ae019" stroke="#2ae019" stroke-width="1" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Star 5 -->
+  <g transform="translate(176, 0)">
+    <polygon points="20,4 24.9,14.9 37,16.6 28,25.3 30.2,37.3 20,31.8 9.8,37.3 12,25.3 3,16.6 15.1,14.9"
+      fill="#2ae019" stroke="#2ae019" stroke-width="1" stroke-linejoin="round"/>
+  </g>
+
+</svg>
