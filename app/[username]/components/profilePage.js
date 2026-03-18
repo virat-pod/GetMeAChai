@@ -37,9 +37,11 @@ export default function Payment({ decodedUsername }) {
   const [AllUsers, setAllUsers] = useState([]);
   const { followingMap, FollowUser } = useContext(SidebarContext);
   const { showNotifications } = useContext(ServiceContext);
+  const [redirectLoading, setRedirectLoading] = useState(false);
 
   useEffect(() => {
-    getData();
+    setRedirectLoading(true);
+    getData().finally(() => setRedirectLoading(false));
   }, []);
 
   useEffect(() => {
@@ -606,6 +608,17 @@ export default function Payment({ decodedUsername }) {
                   success@razorpay
                 </span>
               </div>
+            </div>
+          </div>
+        )}
+
+        {redirectLoading && (
+          <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm text-stone-500 font-medium">
+                Processing payment...
+              </p>
             </div>
           </div>
         )}

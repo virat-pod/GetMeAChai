@@ -5,18 +5,12 @@ import User from "@/lib/models/User";
 import Notification from "@/lib/models/notification";
 import connectDB from "@/lib/db/connectDB";
 
+export const maxDuration = 30;
+
 export const POST = async (req) => {
   await connectDB();
   let body = await req.formData();
   body = Object.fromEntries(body);
-  const id = Payment.findOne({ Oid: body.razorpay_payment_id });
-
-  if (!id) {
-    return NextResponse.error({
-      success: false,
-      message: "Order id not found!",
-    });
-  }
 
   const check = validatePaymentVerification(
     { order_id: body.razorpay_order_id, payment_id: body.razorpay_payment_id },
@@ -24,34 +18,47 @@ export const POST = async (req) => {
     process.env.KEY_SECRET,
   );
 
-  if (check) {
-    const updatePayment = await Payment.findOneAndUpdate(
+  if (!check) {
+    return NextResponse.json(
+      { success: false, message: "Payment Verification Failed" },
+      { status: 400 },
+    );
+  }
+
+  const [updatePayment] = await Promise.all([
+    Payment.findOneAndUpdate(
       { Oid: body.razorpay_order_id },
       { $set: { done: true } },
       { new: true },
+    ),
+  ]);
+
+  if (!updatePayment) {
+    return NextResponse.json(
+      { success: false, message: "Payment not found" },
+      { status: 404 },
     );
-    await User.findOneAndUpdate(
+  }
+
+  const [toUser, fromUser] = await Promise.all([
+    User.findOneAndUpdate(
       { username: updatePayment.to_user },
       { $inc: { balance: updatePayment.amount } },
-    );
+      { new: true },
+    ),
+    User.findOne({ username: updatePayment.from_user }),
+  ]);
 
-    const toUser = await User.findOne({ username: updatePayment.to_user });
-    const fromUser = await User.findOne({ username: updatePayment.from_user });
-    if (toUser && fromUser) {
-      await Notification.create({
-        to: toUser._id,
-        from: fromUser._id,
-        type: "payment",
-        amount: updatePayment.amount,
-      });
-    }
-    return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_URL}/${updatePayment.to_user}?paymentDone=true`,
-    );
-  } else {
-    return NextResponse.error({
-      success: false,
-      message: "Payment Verification Failed",
-    });
+  if (toUser && fromUser) {
+    Notification.create({
+      to: toUser._id,
+      from: fromUser._id,
+      type: "payment",
+      amount: updatePayment.amount,
+    }).catch(console.error);
   }
+
+  return NextResponse.redirect(
+    `${process.env.NEXT_PUBLIC_URL}/${updatePayment.to_user}?paymentDone=true`,
+  );
 };
