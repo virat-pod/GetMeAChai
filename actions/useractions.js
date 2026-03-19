@@ -154,7 +154,7 @@ export const updateProfilePics = async (email, ProfilePic, ProfileBanner) => {
   const changeImage = await User.findOneAndUpdate(
     { email: email },
     imageUpdate,
-    { returnDocument: 'after' },
+    { new: true },
   );
 };
 
@@ -174,7 +174,11 @@ export const followUser = async (userID) => {
   if (isFollowing) {
     me.following.pull(user._id);
     user.followers.pull(me._id);
-    await Notification.findOneAndDelete({ from: me._id, to: userID, type: "follow" });
+    await Notification.findOneAndDelete({
+      from: me._id,
+      to: userID,
+      type: "follow",
+    });
   } else {
     me.following.push(user._id);
     user.followers.push(me._id);
@@ -235,7 +239,7 @@ export const deleteAccount = async (username) => {
 
   const userComments = await comment.find({ author: me._id });
   await Promise.all(
-    userComments.map((c) => commentLike.deleteMany({ comment: c._id }))
+    userComments.map((c) => commentLike.deleteMany({ comment: c._id })),
   );
 
   const userPosts = await Posts.find({ author: me._id });
@@ -243,11 +247,11 @@ export const deleteAccount = async (username) => {
     userPosts.map(async (p) => {
       const postComments = await comment.find({ post: p._id });
       await Promise.all(
-        postComments.map((c) => commentLike.deleteMany({ comment: c._id }))
+        postComments.map((c) => commentLike.deleteMany({ comment: c._id })),
       );
       await comment.deleteMany({ post: p._id });
       await likes.deleteMany({ post: p._id });
-    })
+    }),
   );
 
   await commentLike.deleteMany({ user: me._id });
@@ -255,7 +259,7 @@ export const deleteAccount = async (username) => {
   await Posts.deleteMany({ author: me._id });
   await likes.deleteMany({ user: me._id });
   await Notification.deleteMany({ $or: [{ to: me._id }, { from: me._id }] });
-  await payment.deleteMany({ to_user: username }); 
+  await payment.deleteMany({ to_user: username });
   await User.findByIdAndDelete(me._id);
 
   return { success: true };

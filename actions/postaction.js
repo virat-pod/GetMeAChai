@@ -197,17 +197,15 @@ export const likePost = async (pid) => {
     const updateLike = await Posts.findByIdAndUpdate(
       pid,
       { $inc: { likesCount: -1 } },
-      { returnDocument: "after" },
+      { new: true },
     );
     return { liked: false, likesCount: updateLike.likesCount };
   } else {
     await likes.create({ user: me._id, post: pid });
-    const updateLike = await Posts.findByIdAndUpdate(
-      pid,
-      { $inc: { likesCount: 1 } },
-      { returnDocument: "after" },
-    );
-    const post = await Posts.findById(pid);
+    const [updateLike, post] = await Promise.all([
+      Posts.findByIdAndUpdate(pid, { $inc: { likesCount: 1 } }, { new: true }),
+      Posts.findById(pid).select("author").lean(),
+    ]);
     if (post.author.toString() !== me._id.toString()) {
       await Notification.create({
         to: post.author,
@@ -239,7 +237,7 @@ export const deletePost = async (pid) => {
   const updateUser = await User.findByIdAndUpdate(
     post.author,
     { $inc: { postCount: -1 } },
-    { returnDocument: "after" },
+    { new: true },
   );
 
   if (updateUser.postCount < 10) {
@@ -274,7 +272,7 @@ export const postComment = async (commentData) => {
     const updatedPost = await Posts.findByIdAndUpdate(
       commentData.pid,
       { $inc: { commentCount: 1 } },
-      { returnDocument: "after" },
+      { new: true },
     );
     return JSON.parse(
       JSON.stringify({ comment: newComment, post: updatedPost }),
@@ -417,7 +415,7 @@ export const likeComment = async (commentID) => {
     const updateLikes = await comment.findByIdAndUpdate(
       commentID,
       { $inc: { likesCount: -1 } },
-      { returnDocument: "after" },
+      { new: true },
     );
     return { liked: false, likesCount: updateLikes.likesCount };
   } else {
@@ -425,7 +423,7 @@ export const likeComment = async (commentID) => {
     const updateLikes = await comment.findByIdAndUpdate(
       commentID,
       { $inc: { likesCount: 1 } },
-      { returnDocument: "after" },
+      { new: true },
     );
     return { liked: true, likesCount: updateLikes.likesCount };
   }

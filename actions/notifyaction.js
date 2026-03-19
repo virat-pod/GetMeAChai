@@ -1,9 +1,8 @@
-"use server"
+"use server";
 import connectDB from "@/lib/db/connectDB";
 import Notification from "@/lib/models/notification";
 import User from "@/lib/models/User";
 import { getServerSession } from "next-auth";
-
 
 export const fetchNotifications = async () => {
   await connectDB();
