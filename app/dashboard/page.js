@@ -155,7 +155,8 @@ const dashboard = () => {
                   disabled={!saveChanges}
                   type="text"
                   name="name"
-                  value={profileData.name || "set name"}
+                  value={profileData.name || ""}
+                  placeholder="Set name"
                   className={`inputs-styling ${saveChanges ? "bg-white border-zinc-400 text-zinc-900 shadow-sm" : "opacity-60 cursor-not-allowed"}`}
                 />
                 <span className="text-red-500 text-xs">
