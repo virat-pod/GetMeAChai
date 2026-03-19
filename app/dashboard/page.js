@@ -21,6 +21,7 @@ const dashboard = () => {
   const [loading, setLoading] = useState(true);
   const { showNotifications } = useContext(ServiceContext);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [loadingAccountDelete, setloadingAccountDelete] = useState(false);
 
   const { data: session, update } = useSession();
 
@@ -45,7 +46,12 @@ const dashboard = () => {
   };
 
   const updateChange = async (datas) => {
-    const data = await UpdateProfile(datas, session?.user?.name);
+    let updatedData = { ...datas };
+
+    if (datas.username) {
+      updatedData.username = datas.username.toLowerCase();
+    }
+    const data = await UpdateProfile(updatedData, session?.user?.name);
     if (!data) return;
     if (!data.success) {
       showNotifications(data.message, "error");
@@ -53,7 +59,7 @@ const dashboard = () => {
       return;
     }
     if (data.success) {
-      await update({ user: { name: datas.username } });
+      await update({ user: { name: updatedData.username } });
       showNotifications(data.message);
       setTimeout(() => window.location.reload(), 2000);
     }
@@ -287,14 +293,17 @@ const dashboard = () => {
               </button>
               <button
                 onClick={async () => {
+                  setloadingAccountDelete(true);
                   const result = await deleteAccount(session?.user?.name);
                   if (result.success) {
                     await signOut({ callbackUrl: "/" });
+                    setloadingAccountDelete(false);
                   }
+                  setloadingAccountDelete(false);
                 }}
                 className="flex-1 py-2 rounded-xl bg-red-500 text-xs font-medium text-white hover:bg-red-600 transition-colors"
               >
-                Yes, delete
+                {loadingAccountDelete ? "Deleting account..." : "Yes, delete"}
               </button>
             </div>
           </div>
