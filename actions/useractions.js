@@ -154,7 +154,7 @@ export const updateProfilePics = async (email, ProfilePic, ProfileBanner) => {
   const changeImage = await User.findOneAndUpdate(
     { email: email },
     imageUpdate,
-    { new: true },
+    { returnDocument: 'after' },
   );
 };
 

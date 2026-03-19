@@ -49,7 +49,7 @@ export const POST = async (req) => {
     User.findOne({ username: updatePayment.from_user }),
   ]);
 
-  if (toUser && fromUser) {
+  if ((toUser && fromUser) && (fromUser !== toUser)) {
     Notification.create({
       to: toUser._id,
       from: fromUser._id,

@@ -270,7 +270,7 @@ const CommentModal = ({ post, onClose }) => {
       onClick={() => onClose({ ...post, commentCount: localCommentCount })}
     >
       <div
-        className="bg-white/90 backdrop-blur-xl w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl  max-h-[85vh] flex flex-col border border-stone-200/60"
+        className="bg-white/95 backdrop-blur-xl w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl  max-h-[85vh] flex flex-col border border-stone-200/60"
         onClick={(e) => e.stopPropagation()}
       >
  

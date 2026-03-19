@@ -40,8 +40,7 @@ export default function Payment({ decodedUsername }) {
   const [redirectLoading, setRedirectLoading] = useState(false);
 
   useEffect(() => {
-    setRedirectLoading(true);
-    getData().finally(() => setRedirectLoading(false));
+    getData();
   }, []);
 
   useEffect(() => {
@@ -52,7 +51,11 @@ export default function Payment({ decodedUsername }) {
 
   useEffect(() => {
     if (paymentDone === "true") {
-      getData();
+      setRedirectLoading(true);
+      getData().finally(() => {
+        setRedirectLoading(false);
+        router.replace(window.location.pathname);
+      });
     }
   }, [paymentDone]);
 

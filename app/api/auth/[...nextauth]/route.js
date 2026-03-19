@@ -1,94 +1,91 @@
-import NextAuth from 'next-auth'
+import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import connectDB from '@/lib/db/connectDB';
-import User from '@/lib/models/User';
-import { nanoid } from 'nanoid';
+import connectDB from "@/lib/db/connectDB";
+import User from "@/lib/models/User";
+import { nanoid } from "nanoid";
 
-
-export const authOptions = ({
+export const authOptions = {
   providers: [
     // OAuth authentication providers...
     GitHubProvider({
       clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET
+      clientSecret: process.env.GITHUB_SECRET,
     }),
 
     GoogleProvider({
-    clientId: process.env.GOOGLE_ID,
-    clientSecret: process.env.GOOGLE_SECRET
-  }),
-   
+      clientId: process.env.GOOGLE_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
+    }),
   ],
-   
+
   callbacks: {
-
     async signIn({ user, account, profile, email, credentials }) {
+      if (account.provider === "github" || account.provider === "google") {
+        await connectDB();
+        const currentUser = await User.findOne({ email: profile.email });
 
-    if(account.provider === "github" || account.provider === "google"){
+        if (!currentUser) {
+          let trimmedName = (
+            profile.name.slice(0, 12) || profile.email.split("@")[0]
+          ).slice(0, 12);
+          let baseName = trimmedName.toLowerCase().replaceAll(" ", "");
 
-    await connectDB()
-    const currentUser = await User.findOne({ email: profile.email })
-    
-    if (!currentUser){
-    let baseName = profile.name.toLowerCase().replaceAll(" ", "")
+          let username = baseName;
+          let count = 1;
+          while (await User.findOne({ username })) {
+            const suffix = `${count}`;
+            const maxBaseLength = 12 - suffix.length;
+            username = baseName.slice(0, maxBaseLength) + suffix;
+            count++;
+          }
+          const newUser = new User({
+            name: trimmedName,
+            username: username,
+            uID: `u_${nanoid(4)}`,
+            email: profile.email,
+          });
 
-    let username = baseName
-    let count = 1;
-    while (await User.findOne({ username })) {
-      username = `${baseName}${count}`
-      count++
-    }
-      const newUser = new User({
-        name: profile.name,
-        username: username,
-        uID:  `u_${nanoid(4)}`,
-        email: profile.email,
-      })
+          await newUser.save();
+          user.name = newUser.username;
+          user.uid = newUser.uID;
+        } else {
+          user.name = currentUser.username;
+          user.uid = currentUser.uID;
+        }
 
-      await newUser.save()
-      user.name = newUser.username
-      user.uid = newUser.uID
-    }
-    else {
-      user.name = currentUser.username
-      user.uid = currentUser.uID
-    }
- 
-    return true 
-   }
-   
-  },
-    async redirect({ url, baseUrl }) {
-      return "/dashboard" 
+        return true;
+      }
     },
-   async jwt({ token, user, trigger, session }) {
-  if (user) {
-    token.name = user.name  
-    token.uid = user.uid  
-  }
-  
-  if (!token.uid) {
-    await connectDB()
-    const dbUser = await User.findOne({ username: token.name })
-    token.uid = dbUser?.uID
-  }
+    async redirect({ url, baseUrl }) {
+      return "/dashboard";
+    },
+    async jwt({ token, user, trigger, session }) {
+      if (user) {
+        token.name = user.name;
+        token.uid = user.uid;
+      }
 
-  if (trigger === "update" && session?.user?.name) {
-    token.name = session.user.name  
-  }
-  return token
-},
+      if (!token.uid) {
+        await connectDB();
+        const dbUser = await User.findOne({ username: token.name });
+        token.uid = dbUser?.uID;
+      }
 
-async session({ session, token }) {
-  session.user.name = token.name  
-  session.user.uid = token.uid  
-  return session
-}
-  }
+      if (trigger === "update" && session?.user?.name) {
+        token.name = session.user.name;
+      }
+      return token;
+    },
 
-})
+    async session({ session, token }) {
+      session.user.name = token.name;
+      session.user.uid = token.uid;
+      return session;
+    },
+  },
+};
 
-const handler = NextAuth(authOptions)
+const handler = NextAuth(authOptions);
 
-export {handler as GET, handler as POST}
+export { handler as GET, handler as POST };

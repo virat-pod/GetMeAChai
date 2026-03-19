@@ -197,7 +197,7 @@ export const likePost = async (pid) => {
     const updateLike = await Posts.findByIdAndUpdate(
       pid,
       { $inc: { likesCount: -1 } },
-      { new: true },
+      { returnDocument: 'after' },
     );
     return { liked: false, likesCount: updateLike.likesCount };
   } else {
@@ -205,7 +205,7 @@ export const likePost = async (pid) => {
     const updateLike = await Posts.findByIdAndUpdate(
       pid,
       { $inc: { likesCount: 1 } },
-      { new: true },
+      { returnDocument: 'after' },
     );
     const post = await Posts.findById(pid);
     if (post.author.toString() !== me._id.toString()) {
@@ -239,7 +239,7 @@ export const deletePost = async (pid) => {
   const updateUser = await User.findByIdAndUpdate(
     post.author,
     { $inc: { postCount: -1 } },
-    { new: true },
+    { returnDocument: 'after' },
   );
 
   if (updateUser.postCount < 10) {
@@ -274,7 +274,7 @@ export const postComment = async (commentData) => {
     const updatedPost = await Posts.findByIdAndUpdate(
       commentData.pid,
       { $inc: { commentCount: 1 } },
-      { new: true },
+      { returnDocument: 'after' },
     );
     return JSON.parse(
       JSON.stringify({ comment: newComment, post: updatedPost }),
@@ -416,7 +416,7 @@ export const likeComment = async (commentID) => {
     const updateLikes = await comment.findByIdAndUpdate(
       commentID,
       { $inc: { likesCount: -1 } },
-      { new: true },
+      { returnDocument: 'after' },
     );
     return { liked: false, likesCount: updateLikes.likesCount };
   } else {
@@ -424,7 +424,7 @@ export const likeComment = async (commentID) => {
     const updateLikes = await comment.findByIdAndUpdate(
       commentID,
       { $inc: { likesCount: 1 } },
-      { new: true },
+      { returnDocument: 'after' },
     );
     return { liked: true, likesCount: updateLikes.likesCount };
   }
