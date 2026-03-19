@@ -295,13 +295,13 @@ export const postComment = async (commentData) => {
       { new: true },
     );
     return JSON.parse(
-      JSON.stringify({ comment: newComment, post: updatedPost }),
+      JSON.stringify({ success: true, comment: newComment, post: updatedPost }), 
     );
   } else {
     await comment.findByIdAndUpdate(commentData.parent, {
       $inc: { repliesCount: 1 },
     });
-    return JSON.parse(JSON.stringify({ comment: newComment }));
+    return JSON.parse(JSON.stringify({ success: true, comment: newComment })); 
   }
 };
 

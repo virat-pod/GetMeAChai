@@ -213,7 +213,7 @@ export const followedUser = async () => {
 
 export const searchMostPopularUser = async () => {
   await connectDB();
-  const user = await User.find({}).sort({ followers: -1 }).limit(6);
+  const user = await User.find({}).sort({ followers: -1 }).limit(4);
 
   return JSON.parse(JSON.stringify(user));
 };

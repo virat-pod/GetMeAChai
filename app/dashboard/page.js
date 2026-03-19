@@ -75,7 +75,7 @@ const dashboard = () => {
       URL.revokeObjectURL(objectUrl);
 
       if (img.width !== img.height) {
-        showNotifications("Square image allowed (1:1 ratio)", "error");
+        showNotifications("Square image allow (1:1 ratio)", "error");
         e.target.value = "";
         return;
       }
@@ -85,7 +85,7 @@ const dashboard = () => {
         e.target.value = "";
         return;
       }
-      setLoading(true);
+      setLoading(true)
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", "chai_pics");
@@ -95,10 +95,8 @@ const dashboard = () => {
         { method: "POST", body: formData },
       );
       const data = await res.json();
-      const updateProfile = updateProfilePics(
-        session?.user?.email,
-        data.secure_url,
-      );
+
+      await updateProfilePics(session?.user?.email, data.secure_url);
       await update({ user: { image: data.secure_url } });
       window.location.reload();
     };
