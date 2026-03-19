@@ -4,7 +4,7 @@
 
 A full-stack **social media + creator support platform** built with Next.js 15 — where creators can share posts, build a following, and receive direct financial support from their fans. Think Twitter meets Buy Me a Coffee, but make it desi.
 
-**Live:** [getmeachai.com](https://getmeachai.com) *(replace with your link)*  
+**Live:** [get-me-a-chai-buzz.vercel.app](https://get-me-a-chai-buzz.vercel.app) *(replace with your link)*  
 **Built by:** Viraa  
 **Duration:** Solo project, built from scratch
 
