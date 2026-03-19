@@ -192,6 +192,7 @@ const Navbar = () => {
                       width={44}
                       height={44}
                       alt="profile"
+                      style={{ width: '44px', height: '44px' }}
                     />
                   </>
                 )}
