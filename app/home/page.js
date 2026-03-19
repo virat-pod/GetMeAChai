@@ -1,5 +1,12 @@
 "use client";
-import { useState, useEffect, useRef, createContext, useContext, use } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  createContext,
+  useContext,
+  use,
+} from "react";
 import { SidebarContext } from "@/lib/contexts/SidebarContext";
 import { ServiceContext } from "@/lib/contexts/ServiceContext";
 import Feed from "./components/feed";
@@ -30,6 +37,7 @@ const Home = () => {
   const timeoutRef = useRef(null);
   const [page, setpage] = useState(0);
   const [hasMore, sethasMore] = useState(true);
+  const [loadingAllPosts, setloadingAllPosts] = useState(false);
 
   const {
     setSuggestions,
@@ -39,7 +47,6 @@ const Home = () => {
     fetchedUser,
     suggestions,
     followingMap,
-    
   } = useContext(SidebarContext);
   const { showNotifications } = useContext(ServiceContext);
 
@@ -135,7 +142,7 @@ const Home = () => {
     const result = await Post(updatedData, session?.user?.uid);
 
     if (!result.success) {
-      showNotifications(result.message, "error")
+      showNotifications(result.message, "error");
       setshowPost((prev) => prev.filter((p) => p._id !== tempPost._id));
       return;
     }
@@ -177,8 +184,10 @@ const Home = () => {
   };
 
   const findPost = async (tab = "trending") => {
+    setloadingAllPosts(true);
     const allPosts = await FetchPosts(tab, page);
     setshowPost(allPosts);
+    setloadingAllPosts(false);
   };
 
   const loadMorePost = async () => {
@@ -227,9 +236,7 @@ const Home = () => {
         className="min-h-screen md:pl-28 bg-stone-50"
       >
         <div className="max-w-5xl mx-auto px-4 py-20 flex gap-6 items-start">
-
           <main className="flex-1 min-w-0 max-w-[560px]">
-
             <div className="bg-white rounded-2xl border border-stone-200 p-4 shadow-sm mb-5">
               <div className="flex gap-3">
                 {loading ? (
@@ -425,22 +432,54 @@ const Home = () => {
             </div>
 
             <div className="flex flex-col gap-3">
-              <Feed
-                showPost={showPost}
-                onDelete={(pid, proLocked) => {
-                  fetchOurself(); 
-                  {proLocked && suggestionUser()}
-                  setshowPost((prev) =>
-                    prev
-                      .filter((p) => p._id !== pid)
-                      .map((p) =>
-                        proLocked && p.author.username === session?.user?.name
-                          ? { ...p, author: { ...p.author, isPro: false } }
-                          : p,
-                      ),
-                  );
-                }}
-              />
+              {loadingAllPosts ? (
+                <div className="flex flex-col gap-3">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm animate-pulse"
+                    >
+                      <div className="flex items-start gap-2 mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-stone-200 flex-shrink-0" />
+                        <div className="flex-1 flex flex-col gap-2">
+                          <div className="h-3 w-24 bg-stone-200 rounded-full" />
+                          <div className="h-2 w-16 bg-stone-100 rounded-full" />
+                        </div>
+                        <div className="h-7 w-16 bg-stone-100 rounded-full" />
+                      </div>
+                      <div className="flex flex-col gap-2 mb-4">
+                        <div className="h-3 w-full bg-stone-100 rounded-full" />
+                        <div className="h-3 w-5/6 bg-stone-100 rounded-full" />
+                        <div className="h-3 w-4/6 bg-stone-100 rounded-full" />
+                      </div>
+                      <div className="flex gap-3 pt-3 border-t border-stone-100">
+                        <div className="h-7 w-14 bg-stone-100 rounded-xl" />
+                        <div className="h-7 w-14 bg-stone-100 rounded-xl" />
+                        <div className="h-7 w-14 bg-stone-100 rounded-xl ml-auto" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <Feed
+                  showPost={showPost}
+                  onDelete={(pid, proLocked) => {
+                    fetchOurself();
+                    {
+                      proLocked && suggestionUser();
+                    }
+                    setshowPost((prev) =>
+                      prev
+                        .filter((p) => p._id !== pid)
+                        .map((p) =>
+                          proLocked && p.author.username === session?.user?.name
+                            ? { ...p, author: { ...p.author, isPro: false } }
+                            : p,
+                        ),
+                    );
+                  }}
+                />
+              )}
             </div>
             {hasMore && showPost.length >= 20 && (
               <button

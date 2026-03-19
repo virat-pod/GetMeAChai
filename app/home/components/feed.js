@@ -121,7 +121,6 @@ const feed = ({ showPost, onDelete }) => {
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  {/* Left — name, pro, username, time */}
                   <div className="min-w-0">
                     <div className="flex items-center pl-0.5 gap-1.5 flex-wrap">
                       <span className="font-bold text-stone-900 text-sm truncate">
