@@ -44,7 +44,7 @@ export default function Payment({ decodedUsername }) {
   }, []);
 
   useEffect(() => {
-    if (fetchedUser._id && session?.user) {
+    if (fetchedUser._id) {
       fetchTheirPosts(fetchedUser._id);
     }
   }, [fetchedUser._id]);

@@ -109,7 +109,7 @@ const feed = ({ showPost, onDelete }) => {
             className="bg-white rounded-2xl border border-stone-200 p-4 px-3 sm:p-5 shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="flex items-start gap-2 mb-3">
-              <Link href={`/${post.author.username}`} className="shrink-0">
+              <Link href={`/${post.author.username}`} prefetch={true} className="shrink-0">
                 <Image
                   width={38}
                   height={38}

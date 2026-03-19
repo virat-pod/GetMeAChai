@@ -1,5 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
+import { ServiceContext } from "@/lib/contexts/ServiceContext";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchUser } from "@/actions/useractions";
@@ -10,7 +11,7 @@ import {
   likeComment,
   fetchReplies,
 } from "@/actions/postaction";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -35,6 +36,7 @@ const CommentModal = ({ post, onClose }) => {
   const scrollRef = useRef(null);
   const [loadingComments, setloadingComments] = useState(true);
   const [loadCommentLike, setloadCommentLike] = useState(false);
+  const { showNotifications } = useContext(ServiceContext);
 
   const { data: session } = useSession();
   dayjs.extend(relativeTime);
@@ -136,6 +138,11 @@ const CommentModal = ({ post, onClose }) => {
       parent: replying.show ? replying.toComment : null,
     };
     const result = await postComment(postData);
+
+    if (!result?.success) {
+      showNotifications(result?.message, "error");
+      return;
+    }
     const parentID = replying.show ? replying.toComment : null;
     setdraft("");
     setreplying({ show: false, toUsername: "", toComment: "" });

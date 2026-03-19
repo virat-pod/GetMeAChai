@@ -118,38 +118,41 @@ export const FetchPosts = async (type, page = 0) => {
 
 export const fetchUserPosts = async (uid) => {
   await connectDB();
-  let postWithInfo;
   const session = await getServerSession();
-  const [me, posts] = await Promise.all([
-    User.findOne({ email: session?.user?.email }).lean(),
-    Posts.find({ author: uid })
-      .sort({ createdAt: -1 })
-      .populate("author", "name username ProfilePic uID isPro")
-      .lean(),
-  ]);
 
-  if(!me) return {success: false};
+  const posts = await Posts.find({ author: uid })
+    .sort({ createdAt: -1 })
+    .populate("author", "name username ProfilePic uID isPro")
+    .lean();
 
   if (!posts || posts.length === 0)
     return { success: false, message: "No posts found!" };
 
-  if (session) {
-    const likedPosts = await likes.find({ user: me._id }).distinct("post");
-
-    postWithInfo = posts.map((post) => ({
-      ...post,
-      isLiked: likedPosts.some((id) => id.toString() === post._id.toString()),
-      isFollowing: me.following
-        .map((id) => id.toString())
-        .includes(post.author._id.toString()),
-    }));
-  } else {
-    postWithInfo = posts.map((post) => ({
-      ...post,
-      isLiked: false,
-      isFollowing: false,
-    }));
+  if (!session) {
+    return {
+      success: true,
+      posts: JSON.parse(
+        JSON.stringify(
+          posts.map((post) => ({
+            ...post,
+            isLiked: false,
+            isFollowing: false,
+          })),
+        ),
+      ),
+    };
   }
+
+  const me = await User.findOne({ email: session?.user?.email });
+  const likedPosts = await likes.find({ user: me._id }).distinct("post");
+
+  const postWithInfo = posts.map((post) => ({
+    ...post,
+    isLiked: likedPosts.some((id) => id.toString() === post._id.toString()),
+    isFollowing: me.following
+      .map((id) => id.toString())
+      .includes(post.author._id.toString()),
+  }));
 
   return { success: true, posts: JSON.parse(JSON.stringify(postWithInfo)) };
 };
@@ -254,6 +257,19 @@ export const deletePost = async (pid) => {
 export const postComment = async (commentData) => {
   await connectDB();
   if (!commentData) return;
+
+  const oneMinuteAgo = new Date(Date.now() - 2 * 800);
+  const recentComment = await comment.findOne({
+    author: commentData.uid,
+    createdAt: { $gte: oneMinuteAgo },
+  });
+
+  if (recentComment) {
+    return {
+      success: false,
+      message: "Please do not spam or you will get ban.",
+    };
+  }
 
   const newComment = await comment.create({
     post: commentData.pid,

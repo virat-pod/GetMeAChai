@@ -491,18 +491,16 @@ const Home = () => {
             )}
           </main>
 
-          {/* ── Sidebar ── */}
           <aside className="hidden lg:flex flex-col pt-0.5 w-72 gap-4 sticky top-0">
-            {/* Search */}
             <SearchCreator className="flex items-center bg-white border border-stone-200 rounded-xl w-full py-2.5" />
 
-            {/* Who to follow */}
             <div className="bg-white rounded-2xl border border-stone-200 p-4 shadow-sm">
               <h2 className="font-bold text-base mb-3">People to Follow</h2>
               <div className="flex flex-col gap-1">
                 {suggestions.map((s) => (
                   <Link
                     href={`/${s.username}`}
+                    prefetch={true}
                     key={s.username}
                     className="flex items-center justify-between px-2 py-2 -mx-1 rounded-xl hover:bg-stone-50 cursor-pointer transition-colors"
                   >
