@@ -9,8 +9,19 @@ export const maxDuration = 30;
 
 export const POST = async (req) => {
   await connectDB();
-  let body = await req.formData();
-  body = Object.fromEntries(body);
+
+  const contentType = req.headers.get("content-type") || "";
+  let body;
+
+  if (contentType.includes("application/x-www-form-urlencoded")) {
+    const text = await req.text();
+    body = Object.fromEntries(new URLSearchParams(text));
+  } else {
+    const formData = await req.formData();
+    body = Object.fromEntries(formData);
+  }
+
+  console.log("body received:", body);
 
   const check = validatePaymentVerification(
     { order_id: body.razorpay_order_id, payment_id: body.razorpay_payment_id },
@@ -49,7 +60,7 @@ export const POST = async (req) => {
     User.findOne({ username: updatePayment.from_user }),
   ]);
 
-  if ((toUser && fromUser) && (fromUser !== toUser)) {
+  if (toUser && fromUser && fromUser !== toUser) {
     Notification.create({
       to: toUser._id,
       from: fromUser._id,
