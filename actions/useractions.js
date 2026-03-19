@@ -161,8 +161,10 @@ export const updateProfilePics = async (email, ProfilePic, ProfileBanner) => {
 export const followUser = async (userID) => {
   await connectDB();
   const session = await getServerSession();
-  const me = await User.findOne({ email: session?.user?.email });
-  const user = await User.findById(userID);
+  const [me, user] = await Promise.all([
+    User.findOne({ email: session?.user?.email }),
+    User.findById(userID),
+  ]);
 
   if (!user) return { success: false, message: "User not found" };
   if (user.uID === me.uID) {

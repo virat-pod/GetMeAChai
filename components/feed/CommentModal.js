@@ -33,6 +33,7 @@ const CommentModal = ({ post, onClose }) => {
   const commentPageRef = useRef(0);
   const loadingRef = useRef(false);
   const scrollRef = useRef(null);
+  const [loadingComments, setloadingComments] = useState(true);
 
   const { data: session } = useSession();
   dayjs.extend(relativeTime);
@@ -74,8 +75,10 @@ const CommentModal = ({ post, onClose }) => {
   }, [hasMoreComment]);
 
   const commentsFetching = async () => {
+    setloadingComments(true);
     const result = await fetchComment(post._id);
     setcommentData(result);
+    setloadingComments(false);
   };
 
   const loadMoreComments = async () => {
@@ -273,7 +276,6 @@ const CommentModal = ({ post, onClose }) => {
         className="bg-white/95 backdrop-blur-xl w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl  max-h-[85vh] flex flex-col border border-stone-200/60"
         onClick={(e) => e.stopPropagation()}
       >
- 
         <div className="flex items-center justify-between px-5 py-4">
           <div>
             <h3 className="font-bold text-md text-stone-800">Comments</h3>
@@ -293,7 +295,6 @@ const CommentModal = ({ post, onClose }) => {
           </button>
         </div>
 
-
         <div className="mx-5 mb-4 flex items-start gap-3 bg-stone-50 rounded-2xl px-4 py-3 border border-stone-200">
           <div className="w-0.5 self-stretch bg-amber-400 rounded-full flex-shrink-0" />
           <p className="text-xs text-stone-600 leading-relaxed line-clamp-2">
@@ -301,15 +302,29 @@ const CommentModal = ({ post, onClose }) => {
           </p>
         </div>
 
- 
         <div
           ref={scrollRef}
           className="flex-1 overflow-y-auto flex flex-col px-5 pb-2"
         >
-
+          {loadingComments &&
+            [...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="flex gap-3 border-b border-stone-50 animate-pulse"
+              >
+                <div className="w-8 h-8 rounded-xl bg-stone-200 flex-shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0 flex flex-col gap-2">
+                  <div className="flex gap-2 items-center">
+                    <div className="h-3 w-20 bg-stone-200 rounded-full" />
+                    <div className="h-2 w-12 bg-stone-100 rounded-full" />
+                  </div>
+                  <div className="h-3 w-full bg-stone-100 rounded-full" />
+                  <div className="h-3 w-3/4 bg-stone-100 rounded-full" />
+                </div>
+              </div>
+            ))}
           {commentData &&
             commentData.map((comment, i) => {
-              
               return (
                 <div
                   key={i}
@@ -340,7 +355,6 @@ const CommentModal = ({ post, onClose }) => {
                       {comment.content}
                     </p>
 
-                   
                     <div className="flex items-center gap-3 mt-2">
                       <button
                         onClick={() => {
@@ -403,7 +417,6 @@ const CommentModal = ({ post, onClose }) => {
                       )}
                     </div>
 
-  
                     {showReplies[comment._id] &&
                       comment.replies.map((replies, i) => {
                         return (
@@ -433,7 +446,6 @@ const CommentModal = ({ post, onClose }) => {
                                   </Link>
                                   <span className="text-[10px] text-stone-400">
                                     {dayjs(replies.createdAt).fromNow()}{" "}
-                                    
                                   </span>
                                 </div>
                                 <p className="text-xs text-stone-600 leading-relaxed break-words">
@@ -454,7 +466,6 @@ const CommentModal = ({ post, onClose }) => {
                                     {replies.likesCount}
                                   </button>
 
-                                 
                                   {replies.author.uID ===
                                     session?.user?.uid && (
                                     <button
@@ -491,7 +502,6 @@ const CommentModal = ({ post, onClose }) => {
             })}
         </div>
 
-    
         {replying.show && (
           <div className="flex items-center justify-between mx-5 mb-2 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
             <div className="flex items-center gap-2">
@@ -519,7 +529,6 @@ const CommentModal = ({ post, onClose }) => {
             </button>
           </div>
         )}
-
 
         <div className="flex items-center gap-3 px-5 py-4 border-t border-stone-100">
           <Image

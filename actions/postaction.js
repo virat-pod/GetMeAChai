@@ -120,11 +120,15 @@ export const fetchUserPosts = async (uid) => {
   await connectDB();
   let postWithInfo;
   const session = await getServerSession();
-  const me = await User.findOne({ email: session?.user?.email });
-  const posts = await Posts.find({ author: uid })
-    .sort({ createdAt: -1 })
-    .populate("author", "name username ProfilePic uID isPro")
-    .lean();
+  const [me, posts] = await Promise.all([
+    User.findOne({ email: session?.user?.email }).lean(),
+    Posts.find({ author: uid })
+      .sort({ createdAt: -1 })
+      .populate("author", "name username ProfilePic uID isPro")
+      .lean(),
+  ]);
+
+  if(!me) return {success: false};
 
   if (!posts || posts.length === 0)
     return { success: false, message: "No posts found!" };
