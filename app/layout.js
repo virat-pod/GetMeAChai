@@ -40,8 +40,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Get me a chai",
-  description: "Get me a chai is based on creator funding support by fans.",
+  title: "Get Me A Chai",
+  description: "Support your favourite creators with a chai ☕",
+  icons: { icon: "/images/tea.png" },
 };
 
 export default function RootLayout({ children }) {

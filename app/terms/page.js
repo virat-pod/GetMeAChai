@@ -1,3 +1,8 @@
+export const metadata = {
+  title: "Terms & Conditions | Get Me A Chai",
+  description: "Terms and condition that u need to follow for us!",
+};
+
 const Terms = () => {
   return (
     <div className="min-h-screen bg-stone-50 py-16 pt-22 px-4">

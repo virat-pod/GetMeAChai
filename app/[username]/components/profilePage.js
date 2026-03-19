@@ -34,7 +34,7 @@ export default function Payment({ decodedUsername }) {
   const [count, setcount] = useState(0);
   const [blocked, setblocked] = useState(false);
   const [connectionShow, setconnectionShow] = useState(null);
-  const [AllUsers, setAllUsers] = useState([]);
+  const [AllUsers, setAllUsers] = useState(null);
   const { followingMap, FollowUser } = useContext(SidebarContext);
   const { showNotifications } = useContext(ServiceContext);
   const [redirectLoading, setRedirectLoading] = useState(false);
@@ -133,6 +133,7 @@ export default function Payment({ decodedUsername }) {
 
   const getUsers = async (whatFetch, uid) => {
     setconnectionShow(whatFetch);
+    setAllUsers([]);
     const result = await fetchFollowFollowing(whatFetch, uid);
     if (!result.success) {
       setAllUsers([]);
@@ -631,6 +632,7 @@ export default function Payment({ decodedUsername }) {
         <div
           onClick={() => {
             setAllUsers(null);
+            setconnectionShow(null);
           }}
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/25 backdrop-blur-base"
         >
@@ -645,6 +647,7 @@ export default function Payment({ decodedUsername }) {
               <span
                 onClick={() => {
                   setAllUsers(null);
+                  setconnectionShow(null);
                 }}
                 className="material-symbols-outlined cursor-pointer text-stone-500 !text-lg hover:text-zinc-700"
               >
