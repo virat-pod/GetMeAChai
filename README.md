@@ -213,4 +213,4 @@ Special thanks to the chai that kept me going.
 
 ---
 
-*If you're reading this and you have a job opening — yes, I'm available. Let's talk.*
+*If you're reading this and you are wanna contact me so this is my discord, **gamingfinal** *
