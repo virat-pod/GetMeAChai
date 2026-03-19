@@ -34,6 +34,7 @@ const CommentModal = ({ post, onClose }) => {
   const loadingRef = useRef(false);
   const scrollRef = useRef(null);
   const [loadingComments, setloadingComments] = useState(true);
+  const [loadCommentLike, setloadCommentLike] = useState(false);
 
   const { data: session } = useSession();
   dayjs.extend(relativeTime);
@@ -241,6 +242,7 @@ const CommentModal = ({ post, onClose }) => {
   };
 
   const commentLike = async (commentID, parent) => {
+    setloadCommentLike(commentID);
     const like = await likeComment(commentID);
     setlikesCount((prev) => ({ ...prev, [commentID]: like.liked }));
     if (!parent) {
@@ -249,6 +251,7 @@ const CommentModal = ({ post, onClose }) => {
           c._id === commentID ? { ...c, likesCount: like.likesCount } : c,
         ),
       );
+      setloadCommentLike(null);
     } else {
       setcommentData((prev) =>
         prev.map((c) =>
@@ -264,6 +267,7 @@ const CommentModal = ({ post, onClose }) => {
             : c,
         ),
       );
+      setloadCommentLike(null);
     }
   };
 
@@ -357,16 +361,19 @@ const CommentModal = ({ post, onClose }) => {
 
                     <div className="flex items-center gap-3 mt-2">
                       <button
-                        onClick={() => {
-                          commentLike(comment._id);
-                        }}
+                        onClick={() => commentLike(comment._id)}
+                        disabled={loadCommentLike === comment._id}
                         className={`text-[11px] font-medium transition-all duration-200 flex items-center gap-1 ${likesCount[comment._id] ? "text-rose-500 scale-110" : "text-stone-400 hover:text-rose-400 hover:scale-110"}`}
                       >
-                        <span
-                          className={`material-symbols-outlined !text-[13px] transition-all duration-300 ${likesCount[comment._id] ? "!font-variation-settings-['FILL'_1]" : ""}`}
-                        >
-                          favorite
-                        </span>
+                        {loadCommentLike === comment._id ? (
+                          <div className="w-3 h-3 border-2 border-rose-300 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <span
+                            className={`material-symbols-outlined !text-[13px] transition-all duration-300 ${likesCount[comment._id] ? "!font-variation-settings-['FILL'_1]" : ""}`}
+                          >
+                            favorite
+                          </span>
+                        )}
                         {comment.likesCount}
                       </button>
                       <button
@@ -453,16 +460,21 @@ const CommentModal = ({ post, onClose }) => {
                                 </p>
                                 <div className="flex items-center gap-3 mt-1.5">
                                   <button
-                                    onClick={() => {
-                                      commentLike(replies._id, replies.parent);
-                                    }}
+                                    onClick={() =>
+                                      commentLike(replies._id, replies.parent)
+                                    }
+                                    disabled={loadCommentLike === replies._id}
                                     className={`text-[11px] font-medium transition-all duration-200 flex items-center gap-1 ${likesCount[replies._id] ? "text-rose-500 scale-110" : "text-stone-400 hover:text-rose-400 hover:scale-110"}`}
                                   >
-                                    <span
-                                      className={`material-symbols-outlined !text-[13px] transition-all duration-300 ${likesCount[replies._id] ? "!font-variation-settings-['FILL'_1]" : ""}`}
-                                    >
-                                      favorite
-                                    </span>
+                                    {loadCommentLike === replies._id ? (
+                                      <div className="w-3 h-3 border-2 border-rose-300 border-t-transparent rounded-full animate-spin" />
+                                    ) : (
+                                      <span
+                                        className={`material-symbols-outlined !text-[13px] transition-all duration-300 ${likesCount[replies._id] ? "!font-variation-settings-['FILL'_1]" : ""}`}
+                                      >
+                                        favorite
+                                      </span>
+                                    )}
                                     {replies.likesCount}
                                   </button>
 

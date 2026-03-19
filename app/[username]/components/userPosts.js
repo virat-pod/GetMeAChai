@@ -22,59 +22,77 @@ const userPosts = ({ showPost, onDelete }) => {
   const [shareOpen, setShareOpen] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
   const { showNotifications } = useContext(ServiceContext);
+  const [loadLike, setloadLike] = useState(false);
 
   const { data: session } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-  if (!showPost) return;
-  const initialFollowing = {};
-  const initialLikes = {};
+    if (!showPost) return;
+    const initialFollowing = {};
+    const initialLikes = {};
 
-  showPost.forEach((post) => {
-    initialLikes[post._id] = post.isLiked;
-    initialFollowing[post.author._id] = post.isFollowing;
-  });
+    showPost.forEach((post) => {
+      initialLikes[post._id] = post.isLiked;
+      initialFollowing[post.author._id] = post.isFollowing;
+    });
 
-  setlikedPost((prev) => ({ ...initialLikes, ...prev }));
-  setFollowingMap((prev) => ({ ...initialFollowing, ...prev }));
+    setlikedPost((prev) => ({ ...initialLikes, ...prev }));
+    setFollowingMap((prev) => ({ ...initialFollowing, ...prev }));
 
-  setPosts((prevPosts) => {
-    const prevMap = {};
-    prevPosts.forEach((p) => { prevMap[p._id] = p; });
+    setPosts((prevPosts) => {
+      const prevMap = {};
+      prevPosts.forEach((p) => {
+        prevMap[p._id] = p;
+      });
 
-    return showPost.map((newPost) =>
-      prevMap[newPost._id]
-        ? { ...newPost, likesCount: prevMap[newPost._id].likesCount, commentCount: prevMap[newPost._id].commentCount }
-        : newPost
-    );
-  });
-}, [showPost]);
+      return showPost.map((newPost) =>
+        prevMap[newPost._id]
+          ? {
+              ...newPost,
+              likesCount: prevMap[newPost._id].likesCount,
+              commentCount: prevMap[newPost._id].commentCount,
+            }
+          : newPost,
+      );
+    });
+  }, [showPost]);
 
   const handleLike = async (pid) => {
+    setlikedPost((prev) => ({ ...prev, [pid]: !prev[pid] }));
+    setPosts((prev) =>
+      prev.map((p) =>
+        p._id === pid
+          ? { ...p, likesCount: p.likesCount + (likedPost[pid] ? -1 : 1) }
+          : p,
+      ),
+    );
+    setloadLike(pid);
     const like = await likePost(pid);
+
     setlikedPost((prev) => ({ ...prev, [pid]: like.liked }));
     setPosts((prev) =>
       prev.map((p) =>
         p._id === pid ? { ...p, likesCount: like.likesCount } : p,
       ),
     );
+    setloadLike(null);
   };
 
   const handleDelete = async (pid) => {
-  if (pid.startsWith("temp_")) return;
-  setPosts((prev) => prev.filter((p) => p._id !== pid));
-  const deletedPost = await deletePost(pid);
-  if (!deletedPost?.success) return;
-  onDelete(pid, deletedPost?.proLocked);
-};
+    if (pid.startsWith("temp_")) return;
+    setPosts((prev) => prev.filter((p) => p._id !== pid));
+    const deletedPost = await deletePost(pid);
+    if (!deletedPost?.success) return;
+    onDelete(pid, deletedPost?.proLocked);
+  };
 
   const handleShare = async (post, whichShow = "via") => {
     const url = `${window.location.origin}/post/${post.pID}`;
 
     if (whichShow !== "via") {
       await navigator.clipboard.writeText(url);
-      showNotifications("Link copied")
+      showNotifications("Link copied");
     } else if (navigator.share) {
       await navigator.share({
         title: "Check this post",
@@ -131,8 +149,8 @@ const userPosts = ({ showPost, onDelete }) => {
                   <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={() => {
-                        if(session?.user){
-                        FollowUser(post.author._id)
+                        if (session?.user) {
+                          FollowUser(post.author._id);
                         } else {
                           router.push("/signup");
                         }
@@ -211,8 +229,8 @@ const userPosts = ({ showPost, onDelete }) => {
             <div className="flex items-center gap-1 pt-2 border-t border-stone-100">
               <button
                 onClick={() => {
-                  if(session?.user){
-                  setcommentOpen(post._id)
+                  if (session?.user) {
+                    setcommentOpen(post._id);
                   } else {
                     router.push("/signup");
                   }
@@ -227,8 +245,8 @@ const userPosts = ({ showPost, onDelete }) => {
 
               <button
                 onClick={() => {
-                  if(session?.user){
-                  handleLike(post._id)
+                  if (session?.user) {
+                    handleLike(post._id);
                   } else {
                     router.push("/signup");
                   }
@@ -239,13 +257,17 @@ const userPosts = ({ showPost, onDelete }) => {
                     : "text-stone-400 hover:text-rose-500 hover:bg-rose-50"
                 }`}
               >
-                <span
-                  className={`material-symbols-outlined !text-[16px] transition-transform duration-200 ${
-                    likedPost[post._id] ? "!fill-rose-500 scale-125" : ""
-                  }`}
-                >
-                  favorite
-                </span>
+                {loadLike === post._id ? (
+                  <div className="w-4 h-4 border-2 border-rose-300 border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <span
+                    className={`material-symbols-outlined !text-[16px] transition-transform duration-200 ${
+                      likedPost[post._id] ? "!fill-rose-500 scale-125" : ""
+                    }`}
+                  >
+                    favorite
+                  </span>
+                )}
                 {post.likesCount > 0 && (
                   <span className="font-medium">{post.likesCount}</span>
                 )}

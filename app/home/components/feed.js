@@ -21,6 +21,7 @@ const feed = ({ showPost, onDelete }) => {
   const [menuOpen, setMenuOpen] = useState(null);
   const [shareOpen, setShareOpen] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [loadLike, setloadLike] = useState(false);
 
   const { data: session } = useSession();
 
@@ -55,13 +56,24 @@ const feed = ({ showPost, onDelete }) => {
   }, [showPost]);
 
   const handleLike = async (pid) => {
+    setlikedPost((prev) => ({ ...prev, [pid]: !prev[pid] }));
+    setPosts((prev) =>
+      prev.map((p) =>
+        p._id === pid
+          ? { ...p, likesCount: p.likesCount + (likedPost[pid] ? -1 : 1) }
+          : p,
+      ),
+    );
+    setloadLike(pid);
     const like = await likePost(pid);
+
     setlikedPost((prev) => ({ ...prev, [pid]: like.liked }));
     setPosts((prev) =>
       prev.map((p) =>
         p._id === pid ? { ...p, likesCount: like.likesCount } : p,
       ),
     );
+    setloadLike(null);
   };
 
   const handleDelete = async (pid) => {
@@ -219,19 +231,25 @@ const feed = ({ showPost, onDelete }) => {
 
               <button
                 onClick={() => handleLike(post._id)}
+                disabled={loadLike === post._id}
                 className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl transition-all duration-200 ${
                   likedPost[post._id]
                     ? "text-rose-500 bg-rose-50"
                     : "text-stone-400 hover:text-rose-500 hover:bg-rose-50"
                 }`}
               >
-                <span
-                  className={`material-symbols-outlined !text-[16px] transition-transform duration-200 ${
-                    likedPost[post._id] ? "!fill-rose-500 scale-125" : ""
-                  }`}
-                >
-                  favorite
-                </span>
+                {loadLike === post._id ? (
+                  // 👈 Loading spinner
+                  <div className="w-4 h-4 border-2 border-rose-300 border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <span
+                    className={`material-symbols-outlined !text-[16px] transition-transform duration-200 ${
+                      likedPost[post._id] ? "!fill-rose-500 scale-125" : ""
+                    }`}
+                  >
+                    favorite
+                  </span>
+                )}
                 {post.likesCount > 0 && (
                   <span className="font-medium">{post.likesCount}</span>
                 )}

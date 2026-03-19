@@ -22,7 +22,7 @@ const Post = ({ showPost }) => {
   const [menuOpen, setMenuOpen] = useState(null);
   const [shareOpen, setShareOpen] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
-
+  const [loadLike, setloadLike] = useState(false);
   useEffect(() => {
     if (!showPost) return;
     setFollowingMap({ [showPost.author._id]: showPost.isFollowing });
@@ -36,8 +36,10 @@ const Post = ({ showPost }) => {
   };
 
   const handleLike = async (pid) => {
+    setloadLike(true);
     const like = await likePost(pid);
     setlikedPost({ [pid]: like.liked });
+    setloadLike(false);
     setPost((prev) => ({
       ...prev,
       likesCount: like.likesCount,
@@ -232,13 +234,17 @@ const Post = ({ showPost }) => {
                 : "text-stone-400 hover:text-rose-500 hover:bg-rose-50"
             }`}
           >
-            <span
-              className={`material-symbols-outlined !text-[16px] transition-transform duration-200 ${
-                likedPost[post._id] ? "!fill-rose-500 scale-125" : ""
-              }`}
-            >
-              favorite
-            </span>
+            {loadLike ? (
+              <div className="w-4 h-4 border-2 border-rose-300 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <span
+                className={`material-symbols-outlined !text-[16px] transition-transform duration-200 ${
+                  likedPost[post._id] ? "!fill-rose-500 scale-125" : ""
+                }`}
+              >
+                favorite
+              </span>
+            )}
             {post.likesCount > 0 && (
               <span className="font-medium">{post.likesCount}</span>
             )}
