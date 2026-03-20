@@ -171,7 +171,7 @@ export default function Payment({ decodedUsername }) {
       prefill: {
         name: paymentform.name || "Chai Lover",
         email: "test@getmeachai.com",
-        contact: "9999999999",
+        contact: "8810294594",
         vpa: "success@razorpay",
       },
       theme: {
@@ -600,7 +600,7 @@ export default function Payment({ decodedUsername }) {
                   💡 Test tip
                 </p>
                 <p className="text-[10px] text-stone-500 leading-relaxed mb-1.5">
-                  UPI field mein ye use karna:
+                  (No real payments - all fake) UPI field mein ye use karna:
                 </p>
                 <span
                   onClick={() => {
