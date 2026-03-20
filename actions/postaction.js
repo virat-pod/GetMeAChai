@@ -105,13 +105,23 @@ export const FetchPosts = async (type, page = 0) => {
 
   const likedPosts = await likes.find({ user: me._id }).distinct("post");
 
-  const posts = allPosts.map((post) => ({
-    ...post,
-    isLiked: likedPosts.some((id) => id.toString() === post._id.toString()),
-    isFollowing: me.following
-      .map((id) => id.toString())
-      .includes(post.author._id.toString()),
-  }));
+  const posts = await Promise.all(
+    allPosts.map(async (post) => {
+      const commentCount = await comment.countDocuments({
+        post: post._id,
+        parent: null,
+      });
+
+      return {
+        ...post,
+        commentCount,
+        isLiked: likedPosts.some((id) => id.toString() === post._id.toString()),
+        isFollowing: me.following
+          .map((id) => id.toString())
+          .includes(post.author._id.toString()),
+      };
+    }),
+  );
 
   return JSON.parse(JSON.stringify(posts));
 };
@@ -295,13 +305,13 @@ export const postComment = async (commentData) => {
       { new: true },
     );
     return JSON.parse(
-      JSON.stringify({ success: true, comment: newComment, post: updatedPost }), 
+      JSON.stringify({ success: true, comment: newComment, post: updatedPost }),
     );
   } else {
     await comment.findByIdAndUpdate(commentData.parent, {
       $inc: { repliesCount: 1 },
     });
-    return JSON.parse(JSON.stringify({ success: true, comment: newComment })); 
+    return JSON.parse(JSON.stringify({ success: true, comment: newComment }));
   }
 };
 
