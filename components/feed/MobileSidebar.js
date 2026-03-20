@@ -26,7 +26,7 @@ const MobileSidebar = ({ onClose }) => {
       onClick={onClose}
     >
       <div
-        className="absolute bottom-16 left-0 right-0 bg-white rounded-t-3xl h-[55vh] overflow-y-auto p-4 flex flex-col gap-4"
+        className="absolute bottom-12 left-0 right-0 bg-white rounded-t-3xl h-[55vh] overflow-y-auto p-4 flex flex-col gap-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-10 h-1 bg-stone-200 rounded-full mx-auto mb-1" />
