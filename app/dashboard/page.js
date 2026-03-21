@@ -65,35 +65,44 @@ const dashboard = () => {
     }
   };
 
-  const handleProfile = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+const handleProfile = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const img = new window.Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.src = objectUrl;
+    img.onload = async () => {
+      URL.revokeObjectURL(objectUrl);
 
-  try {
-    setLoading(true);
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "chai_pics");
-
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dt4qdszmp/image/upload",
-      {
-        method: "POST",
-        body: formData,
+      const ratio = img.width / img.height;
+      if (Math.abs(ratio - 1) > 0.05) {
+        showNotifications("Square image allow (1:1 ratio)", "error");
+        e.target.value = "";
+        return;
       }
-    );
 
-    const data = await res.json();
+      if (img.width < 400) {
+        showNotifications("Image min 400x400 honi chahiye", "error");
+        e.target.value = "";
+        return;
+      }
 
-    await updateProfilePics(session?.user?.email, data.secure_url);
-    await update({ user: { image: data.secure_url } });
+      setLoading(true);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "chai_pics");
 
-    window.location.reload();
-  } finally {
-    setLoading(false);
-  }
-};
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/dt4qdszmp/image/upload`,
+        { method: "POST", body: formData },
+      );
+      const data = await res.json();
+
+      await updateProfilePics(session?.user?.email, data.secure_url);
+      await update({ user: { image: data.secure_url } });
+      window.location.reload();
+    };
+  };
 
   return (
     <>
