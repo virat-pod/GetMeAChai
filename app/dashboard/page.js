@@ -74,8 +74,8 @@ const handleProfile = async (e) => {
     img.onload = async () => {
       URL.revokeObjectURL(objectUrl);
 
-      const ratio = img.width / img.height;
-      if (Math.abs(ratio - 1) > 0.05) {
+   const ratio = img.width / img.height;
+       if (Math.abs(ratio - 1) > 0.05) {
         showNotifications("Square image allow (1:1 ratio)", "error");
         e.target.value = "";
         return;
