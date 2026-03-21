@@ -16,7 +16,7 @@ export const GET = async (req) => {
     createdAt: { $lt: tenMinutesAgo },
   });
 
-  const oneDayAgo = new Date(Date.now() - (5 * 24 * 60 * 60 * 1000);
+ const oneDayAgo = new Date(Date.now() - (5 * 24 * 60 * 60 * 1000));
   await Notification.deleteMany({
     createdAt: { $lt: oneDayAgo },
   });
