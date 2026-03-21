@@ -51,13 +51,13 @@ export default function RootLayout({ children }) {
       <body
         className={`${lato.variable} ${dancingScript.variable} ${roboto.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ServiceProvider>
           <SessionWrapper>
+           <ServiceProvider>
             <SidebarProvider>
               <ScrollWrapper>{children}</ScrollWrapper>
             </SidebarProvider>
+             </ServiceProvider>
           </SessionWrapper>
-        </ServiceProvider>
       </body>
     </html>
   );
