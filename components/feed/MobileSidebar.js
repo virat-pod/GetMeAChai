@@ -55,7 +55,7 @@ const MobileSidebar = ({ onClose }) => {
   <div className="flex items-center gap-1.5">
     <p className="text-xs font-bold text-stone-900">{s.name}</p>
     {s.isPro && (
-      <span className="bg-amber-400 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">
+      <span className="bg-amber-400 text-white text-[8px] font-bold px-1.5 py-0.5 mb-0.5 rounded-full">
         PRO
       </span>
     )}
