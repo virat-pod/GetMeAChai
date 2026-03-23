@@ -127,7 +127,7 @@ const feed = ({ showPost, onDelete }) => {
                         {post.author.name}
                       </span>
                       {post.author.isPro && (
-                        <span className="bg-amber-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-full tracking-wide shrink-0 flex items-center justify-center">
+                        <span className="bg-amber-400 text-white text-[9px] font-bold px-2 py-0.5 mb-0.5 rounded-full tracking-wide shrink-0 flex items-center justify-center">
                           PRO
                         </span>
                       )}
