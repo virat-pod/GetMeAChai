@@ -51,10 +51,17 @@ const MobileSidebar = ({ onClose }) => {
                     height={36}
                     alt="profilePic"
                   />
-                  <div>
-                    <p className="text-xs font-bold text-stone-900">{s.name}</p>
-                    <p className="text-[11px] text-stone-400">@{s.username}</p>
-                  </div>
+<div>
+  <div className="flex items-center gap-1.5">
+    <p className="text-xs font-bold text-stone-900">{s.name}</p>
+    {s.isPro && (
+      <span className="bg-amber-400 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">
+        PRO
+      </span>
+    )}
+  </div>
+  <p className="text-[11px] text-stone-400">@{s.username}</p>
+</div>
                 </Link>
                 <button
                   onClick={() => FollowUser(s._id)}
