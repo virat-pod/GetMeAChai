@@ -351,16 +351,13 @@ const CommentModal = ({ post, onClose }) => {
 
                   <div className="flex-1 min-w-0">
                  <div className="flex items-center gap-2 mb-1">
-              <Link onClick={() => onClose()} href={`/${comment.author.username}`}
-              className="inline font-bold text-xs text-stone-800"
-                                                               >
-                {comment.author.username}
+  <Link
+    onClick={() => onClose()}
+    href={`/${comment.author.username}`}
+    className="inline font-bold text-xs text-stone-800"
+  >
+    {comment.author.username}
   </Link>
-  {comment.author.isPro && (
-    <span className="bg-amber-400 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">
-      PRO
-    </span>
-  )}
   <span className="text-[10px] text-stone-400">
     {dayjs(comment.createdAt).fromNow()}
   </span>
