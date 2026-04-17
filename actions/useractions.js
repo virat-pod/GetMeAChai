@@ -116,7 +116,6 @@ export const fetchPayment = async (username) => {
 export const UpdateProfile = async (nData, OldUsername) => {
   await connectDB();
 
-  // Only run username validation if username is being updated
   if (nData.username) {
     if (nData.username.length < 4)
       return { success: false, message: "Username too short" };
@@ -129,7 +128,7 @@ export const UpdateProfile = async (nData, OldUsername) => {
 
     const existingUser = await User.findOne({ username: nData.username });
 
-    if (existingUser) {
+    if (existingUser && nData.username !== OldUsername) {
       return { success: false, message: "Username already existed" };
     }
   }
