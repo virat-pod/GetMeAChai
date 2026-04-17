@@ -126,6 +126,9 @@ export const UpdateProfile = async (nData, OldUsername) => {
     if (/[^a-zA-Z0-9]/.test(nData.username))
       return { success: false, message: "Only letters and numbers allowed" };
 
+    if(nData.username === OldUsername)
+      return {success: false, message: "Why do you playing with name?"};
+    
     const existingUser = await User.findOne({ username: nData.username });
 
     if (existingUser && nData.username !== OldUsername) {
