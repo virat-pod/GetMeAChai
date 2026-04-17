@@ -116,20 +116,25 @@ export const fetchPayment = async (username) => {
 export const UpdateProfile = async (nData, OldUsername) => {
   await connectDB();
 
-  if (OldUsername !== nData.username) {
+  // Only run username validation if username is being updated
+  if (nData.username) {
     if (nData.username.length < 4)
       return { success: false, message: "Username too short" };
+
     if (nData.username.length > 12)
       return { success: false, message: "Username too long" };
+
     if (/[^a-zA-Z0-9]/.test(nData.username))
       return { success: false, message: "Only letters and numbers allowed" };
-    let u = await User.findOne({ username: nData.username });
-    if (u) {
-      return { success: false, message: "Username already exists" };
+
+    const existingUser = await User.findOne({ username: nData.username });
+
+    if (existingUser) {
+      return { success: false, message: "Username already existed" };
     }
   }
 
-  if (nData.name.length > 12) {
+  if (nData.name && nData.name.length > 12) {
     return {
       success: false,
       message: "Name should be less than 12 characters.",
@@ -137,6 +142,7 @@ export const UpdateProfile = async (nData, OldUsername) => {
   }
 
   await User.updateOne({ email: nData.email }, nData);
+
   return { success: true, message: "Data has been updated" };
 };
 
